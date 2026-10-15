@@ -1,12 +1,10 @@
+#include "kernel/fcntl.h"
 #include "kernel/types.h"
 #include "user/user.h"
-#include "kernel/fcntl.h"
 
 void memdump(char *fmt, char *data, int len);
 
-int
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   if (argc == 1) {
     printf("Example 1:\n");
     int a[2] = {61810, 2026};
@@ -57,9 +55,59 @@ main(int argc, char *argv[])
   exit(0);
 }
 
-void
-memdump(char *fmt, char *data, int len)
-{
+void memdump(char *fmt, char *data, int len) {
   // Your code here.  `data` holds `len` valid bytes.
-
+  int index = 0;
+  // int j;
+  for (int i = 0; i < strlen(fmt); ++i) {
+    switch (fmt[i]) {
+    case 'i':
+      if (index + 4 > len) {
+        printf("memdump: not enough data for 'i'\n");
+        return;
+      }
+      printf("%d\n", *(int *)data);
+      data += 4;
+      index += 4;
+      break;
+    case 'p':
+      if (index + 8 > len) {
+        printf("memdump: not enough data for 'p'\n");
+        return;
+      }
+      printf("%lx\n", *(uint64 *)data);
+      data += 8;
+      index += 8;
+      break;
+    case 'h':
+      if (index + 2 > len) {
+        printf("memdump: not enough data for 'h'\n");
+        return;
+      }
+      printf("%d\n", *(short *)data);
+      data += 2;
+      index += 2;
+      break;
+    case 'c':
+      if (index + 1 > len) {
+        printf("memdump: not enough data for 'c'\n");
+        return;
+      }
+      printf("%c\n", *(char *)data);
+      data += 1;
+      index += 1;
+      break;
+    case 's':
+      if (index + 8 > len) {
+        printf("memdump: not enough data for 's'\n");
+        return;
+      }
+      printf("%s\n", (char*)*(long*)data);
+      data += 8;
+      index += 8;
+      break;
+    case 'S':
+      printf("%s", data);
+    }
+  }
 }
