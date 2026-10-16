@@ -205,9 +205,8 @@ UPROGS=\
 	$U/_sync\
 	$U/_sleep\
 	$U/_sixfive\
-
-
-
+	$U/_memdump\
+	$U/_find\
 
 
 ifeq ($(LAB),syscall)
