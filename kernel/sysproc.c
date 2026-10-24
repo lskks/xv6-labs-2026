@@ -110,3 +110,25 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_interpose(void)
+{
+  int mask;
+  struct proc* p = myproc();
+
+  argint(0, &mask);
+  p->mask = mask;
+  char path[MAXPATH];
+  if (argstr(1, path, MAXPATH) == -1) {
+    printk("interpose: cannot fetch the path name");
+    return -1;
+  }
+
+  if (strncmp(path, "-", MAXPATH) == 0) {
+    p->pathname[0] = '\0';
+  }
+
+  strncpy(p->pathname, path, MAXPATH);
+  return 0;
+}

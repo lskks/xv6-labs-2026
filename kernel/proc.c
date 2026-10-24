@@ -275,6 +275,12 @@ kfork(void)
   }
   np->sz = p->sz;
 
+  // copy mask
+  np->mask = p->mask;
+
+  // copy pathname
+  safestrcpy(np->pathname, p->pathname, MAXPATH);
+
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 

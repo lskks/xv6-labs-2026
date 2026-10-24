@@ -1,0 +1,13 @@
+Diagnostics:
+  Suppress:
+    - drv_unknown_argument
+
+CompileFlags:
+  Remove:
+    - -fvar-tracking
+    - -fvar-tracking-assignments
+    - -static
+    - -no-pie
+
+Index:
+  Background: Build
