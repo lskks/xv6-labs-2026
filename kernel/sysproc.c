@@ -127,8 +127,9 @@ sys_interpose(void)
 
   if (strncmp(path, "-", MAXPATH) == 0) {
     p->pathname[0] = '\0';
+  } else {
+    strncpy(p->pathname, path, MAXPATH);
   }
 
-  strncpy(p->pathname, path, MAXPATH);
   return 0;
 }
