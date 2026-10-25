@@ -1,0 +1,8 @@
+usertrap
+15
+user
+80001d70:	00002903          	lw	s2,0(zero) # 0 <_entry-0x80000000>
+s2
+0 is not mapped
+init
+1
