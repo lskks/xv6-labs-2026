@@ -110,7 +110,7 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
       pagetable = (pagetable_t)PTE2PA(*pte);
 #ifdef LAB_PGTBL
       if (PTE_LEAF(*pte)) {
-        return pte;
+        return pte; 
       }
 #endif
     } else {
@@ -148,10 +148,57 @@ walkaddr(pagetable_t pagetable, uint64 va)
 
 
 #if defined(LAB_PGTBL) || defined(SOL_MMAP) || defined(SOL_COW)
+
+void print_dots(int level)
+{
+  if (level == 2)
+    printk("..");
+  else if (level == 1)
+    printk(".. ..");
+  else if (level == 0)
+    printk(".. .. ..");
+}
+
+void print_perm(pte_t pte)
+{
+  if (pte & PTE_R)
+    printk("R");
+  if (pte & PTE_W)
+    printk("W");
+  if (pte & PTE_X)
+    printk("X");
+  if (pte & PTE_U)
+    printk("U");
+}
+
+void vmprint_helper(pagetable_t pagetable, int level, uint64 va) 
+{
+  for (uint64 i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+    if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+      // this PTE points to a lower-level page table.
+      uint64 child = PTE2PA(pte);
+      uint64 cur_va = va + (i << (12 + 9 * level));
+      print_dots(level);
+      printk("%p: pte %p pa %p\n", (pagetable_t)cur_va, (pagetable_t)pte, (pagetable_t)child);
+      vmprint_helper((pagetable_t)child, level - 1, cur_va);
+    } else if (pte & PTE_V) {
+      print_dots(level);      
+      uint64 cur_va = va + (i << (12 + 9 * level));
+      
+      printk("%p: pte %p pa %p ", (pagetable_t)cur_va, (pagetable_t)pte, (pagetable_t)PTE2PA(pte));
+      print_perm(pte);
+      printk("\n");
+    }
+  }
+}
+
 void
 vmprint(pagetable_t pagetable)
 {
   // your code here
+  printk("page table %p\n", pagetable);
+  vmprint_helper(pagetable, 2, 0);
 }
 #endif
 
