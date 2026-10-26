@@ -47,7 +47,7 @@ main(int argc, char *argv[])
       printf("%s: interpose failed", argv[0]);
       exit(1);
     }
-    exec(nargv[0], nargv);
+  exec(nargv[0], nargv);
     printf("%s: exec %s failed\n", argv[0], nargv[0]);
     exit(1);
   } else {

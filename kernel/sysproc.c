@@ -118,18 +118,24 @@ sys_interpose(void)
   struct proc* p = myproc();
 
   argint(0, &mask);
-  p->mask = mask;
   char path[MAXPATH];
   if (argstr(1, path, MAXPATH) == -1) {
     printk("interpose: cannot fetch the path name");
     return -1;
   }
-
-  if (strncmp(path, "-", MAXPATH) == 0) {
-    p->pathname[0] = '\0';
-  } else {
-    strncpy(p->pathname, path, MAXPATH);
+  
+  if (p->mask == 0) {
+    if (strncmp(path, "-", MAXPATH) == 0) {
+      p->pathname[0] = '\0';
+    } else {
+      strncpy(p->pathname, path, MAXPATH);
+    }
   }
+
+  if (p->mask == 0)
+    p->mask = mask;
+  else
+    p->mask |= mask;
 
   return 0;
 }
