@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include <time.h>
 #ifdef PGTBL_SOL
 #include "riscv.h"
 #endif
@@ -73,7 +74,6 @@ sys_pause(void)
   int n;
   uint ticks0;
 
-
   argint(0, &n);
   if (n < 0)
     n = 0;
@@ -93,7 +93,6 @@ sys_pause(void)
   return 0;
 }
 
-
 #ifdef LAB_PGTBL
 int
 sys_vmprint(void)
@@ -111,6 +110,37 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+  int len = 0;
+  uint64 abits = 0, base = 0;
+  struct proc* p = myproc();
+
+  char temp[128] = {0};
+  
+  argaddr(0, &base);
+  argint(1, &len);
+  argaddr(2, &abits);
+  
+  int sz = (len + 7) / 8;
+  if (base == 0 || abits == 0 || len > 1024 || len < 1)
+    return -1;
+
+  pagetable_t pagetable = p->pagetable;
+
+  for (uint64 i = 0; i < len; ++i) {
+    pte_t *pte = walk(pagetable, base + i * PGSIZE, 0);
+    if (pte == NULL)
+      return -1;
+    if ((*pte & PTE_V) == 0)
+      return -1;
+    if (*pte & PTE_A) {
+      temp[i / 8] |= (1U << (i % 8));
+      *pte &= ~(PTE_A);
+    }
+  }
+
+  if (copyout(pagetable, p->sz, abits, (char*)&temp, sz) == -1)
+    return -1;
+
   return 0;
 }
 #endif
