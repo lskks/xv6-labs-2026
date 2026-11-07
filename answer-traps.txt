@@ -1,0 +1,6 @@
+a2
+it's an inline function
+0x00000000000006fe
+0x0000000000000034
+He110 World
+it could be anything, because the second %d will read the value of register a2, but a2 is not initialized, so it could be any value.
