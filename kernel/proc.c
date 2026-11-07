@@ -149,6 +149,8 @@ found:
   p->ticks = 0;
   p->elapsed_ticks = 0;
   p->handler = 0;
+  p->saved_trapframe = *(p->trapframe);
+  p->in_handler = 0;
 
   return p;
 }
